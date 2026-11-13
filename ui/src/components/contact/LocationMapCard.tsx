@@ -1,5 +1,7 @@
-import { MapPin, Navigation } from 'lucide-react'
+import { MapPin, Navigation, WifiOff } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import type { ContactInfoData } from '@/config/contactConfig'
+import { useNetworkStatus } from '@/hooks/useNetworkStatus'
 import { useTranslation } from '@/i18n'
 
 export interface LocationMapCardProps {
@@ -8,7 +10,15 @@ export interface LocationMapCardProps {
 
 export function LocationMapCard({ contactInfo }: LocationMapCardProps) {
   const { t } = useTranslation()
+  const { isOnline, isOffline } = useNetworkStatus()
+  const [reloadKey, setReloadKey] = useState(0)
   const config = contactInfo
+
+  useEffect(() => {
+    if (isOnline) {
+      setReloadKey((prev) => prev + 1)
+    }
+  }, [isOnline])
 
   return (
     <section
@@ -43,16 +53,35 @@ export function LocationMapCard({ contactInfo }: LocationMapCardProps) {
         </a>
       </div>
 
-      {/* Embedded Interactive Google Map Centered on Toño Persianas */}
+      {/* Embedded Interactive Google Map Centered on Toño Persianas (Theme-Adaptive + Auto-Reload on Reconnect) */}
       <div className="h-72 w-full border-t border-[#E5DAC8] bg-stone-200 sm:h-80 dark:border-stone-800 dark:bg-stone-900">
-        <iframe
-          title={t.contactPage.mapTitle}
-          src={config.googleMapsEmbedUrl}
-          className="h-full w-full border-0"
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-          allowFullScreen
-        />
+        {isOffline ? (
+          <div
+            role="status"
+            aria-live="polite"
+            className="flex h-full w-full flex-col items-center justify-center gap-2.5 bg-gradient-to-b from-[#332B24] via-[#27211C] to-[#1D1814] px-6 text-center dark:from-stone-900 dark:via-[#1E1916] dark:to-stone-950"
+          >
+            <span className="flex h-12 w-12 items-center justify-center rounded-full border border-[#D6C3A5]/35 bg-stone-950/60 shadow-inner">
+              <WifiOff
+                className="size-5 text-[#D6C3A5]"
+                aria-hidden="true"
+              />
+            </span>
+            <span className="text-[11px] font-medium tracking-[0.18em] text-[#E8DAC2]/85 uppercase">
+              {t.contactPage.mapOfflineLabel}
+            </span>
+          </div>
+        ) : (
+          <iframe
+            key={reloadKey}
+            title={t.contactPage.mapTitle}
+            src={config.googleMapsEmbedUrl}
+            className="h-full w-full border-0 transition-[filter] duration-500 [filter:sepia(8%)_contrast(98%)] dark:[filter:invert(92%)_hue-rotate(180deg)_brightness(92%)_contrast(90%)_sepia(14%)]"
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            allowFullScreen
+          />
+        )}
       </div>
     </section>
   )

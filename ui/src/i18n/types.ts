@@ -62,6 +62,7 @@ export interface TranslationDictionary {
     mapTitle: string
     mapSubtitle: string
     openMapsCta: string
+    mapOfflineLabel: string
     chat: {
       title: string
       statusOnline: string

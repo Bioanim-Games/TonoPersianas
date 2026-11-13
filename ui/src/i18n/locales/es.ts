@@ -85,6 +85,7 @@ export const es: TranslationDictionary = {
     mapSubtitle:
       'Consulta nuestra ubicación en Google Maps para visitarnos o agendar toma de medidas a domicilio.',
     openMapsCta: 'Abrir ubicación en Google Maps',
+    mapOfflineLabel: 'Mapa interactivo no disponible sin conexión',
     chat: {
       title: 'Chat en Línea · Toño Persianas',
       statusOnline: 'Conectado con WhatsApp Business',
