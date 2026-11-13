@@ -1,10 +1,14 @@
 import { MapPin, Navigation } from 'lucide-react'
-import { DEFAULT_CONTACT_CONFIG } from '@/config/contactConfig'
+import type { ContactInfoData } from '@/config/contactConfig'
 import { useTranslation } from '@/i18n'
 
-export function LocationMapCard() {
+export interface LocationMapCardProps {
+  contactInfo: ContactInfoData
+}
+
+export function LocationMapCard({ contactInfo }: LocationMapCardProps) {
   const { t } = useTranslation()
-  const config = DEFAULT_CONTACT_CONFIG
+  const config = contactInfo
 
   return (
     <section

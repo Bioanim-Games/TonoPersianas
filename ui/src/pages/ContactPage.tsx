@@ -1,13 +1,34 @@
+import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router'
 import { ContactInfoPanel } from '@/components/contact/ContactInfoPanel'
 import { LiveChatBox } from '@/components/contact/LiveChatBox'
 import { LocationMapCard } from '@/components/contact/LocationMapCard'
+import {
+  DEFAULT_CONTACT_CONFIG,
+  type ContactInfoData,
+} from '@/config/contactConfig'
 import { useTranslation } from '@/i18n'
+import { fetchContactInfo, getCachedContactInfo } from '@/services/contactApi'
 
 export function ContactPage() {
   const { t } = useTranslation()
   const [searchParams] = useSearchParams()
   const selectedProductSlug = searchParams.get('producto')
+  const [contactInfo, setContactInfo] = useState<ContactInfoData>(
+    () => getCachedContactInfo() ?? DEFAULT_CONTACT_CONFIG,
+  )
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' })
+    let active = true
+    fetchContactInfo().then((data) => {
+      if (!active) return
+      setContactInfo(data)
+    })
+    return () => {
+      active = false
+    }
+  }, [])
 
   return (
     <main className="min-h-svh w-full bg-[#F5F0E6] bg-gradient-to-b from-[#FAF6EE] via-[#F4EFE4] to-[#EDE5D7] pt-32 pb-20 text-stone-900 transition-colors duration-300 sm:pt-36 dark:bg-[#1C1815] dark:from-stone-950 dark:via-[#1E1916] dark:to-[#171311] dark:text-stone-100">
@@ -28,12 +49,15 @@ export function ContactPage() {
         {/* Two-Column Studio Layout */}
         <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
           <div className="flex flex-col gap-8 lg:col-span-6">
-            <ContactInfoPanel />
-            <LocationMapCard />
+            <ContactInfoPanel contactInfo={contactInfo} />
+            <LocationMapCard contactInfo={contactInfo} />
           </div>
 
           <div className="lg:col-span-6">
-            <LiveChatBox selectedProductSlug={selectedProductSlug} />
+            <LiveChatBox
+              selectedProductSlug={selectedProductSlug}
+              contactInfo={contactInfo}
+            />
           </div>
         </div>
       </div>

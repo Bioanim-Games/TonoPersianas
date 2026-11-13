@@ -193,7 +193,9 @@ export function getCachedProducts(): readonly ProductItem[] | null {
 
 export async function fetchCategories(): Promise<readonly CategoryItem[]> {
   try {
-    const res = await fetch('/api/categories')
+    const res = await fetch('/bff/catalog/categories', {
+      credentials: 'same-origin',
+    })
     if (!res.ok) {
       cachedCategories = FALLBACK_CATEGORIES
       return FALLBACK_CATEGORIES
@@ -209,7 +211,9 @@ export async function fetchCategories(): Promise<readonly CategoryItem[]> {
 
 export async function fetchProducts(): Promise<readonly ProductItem[]> {
   try {
-    const res = await fetch('/api/products')
+    const res = await fetch('/bff/catalog/products', {
+      credentials: 'same-origin',
+    })
     if (!res.ok) {
       cachedProducts = FALLBACK_PRODUCTS
       return FALLBACK_PRODUCTS

@@ -1,10 +1,14 @@
 import { ExternalLink, Mail, Phone } from 'lucide-react'
-import { DEFAULT_CONTACT_CONFIG } from '@/config/contactConfig'
+import type { ContactInfoData } from '@/config/contactConfig'
 import { useTranslation } from '@/i18n'
 
-export function ContactInfoPanel() {
+export interface ContactInfoPanelProps {
+  contactInfo: ContactInfoData
+}
+
+export function ContactInfoPanel({ contactInfo }: ContactInfoPanelProps) {
   const { t } = useTranslation()
-  const config = DEFAULT_CONTACT_CONFIG
+  const config = contactInfo
 
   return (
     <section

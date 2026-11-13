@@ -1,11 +1,12 @@
 import { MessageCircle, Send, Settings2, Sparkles } from 'lucide-react'
-import { useState, type FormEvent } from 'react'
-import { DEFAULT_CONTACT_CONFIG } from '@/config/contactConfig'
+import { useEffect, useState, type FormEvent } from 'react'
+import type { ContactInfoData } from '@/config/contactConfig'
 import { useTranslation } from '@/i18n'
 import type { ChatMessage } from '@/types/chat'
 
 export interface LiveChatBoxProps {
   selectedProductSlug: string | null
+  contactInfo: ContactInfoData
 }
 
 function formatTimeNow(): string {
@@ -15,14 +16,21 @@ function formatTimeNow(): string {
   })
 }
 
-export function LiveChatBox({ selectedProductSlug }: LiveChatBoxProps) {
+export function LiveChatBox({
+  selectedProductSlug,
+  contactInfo,
+}: LiveChatBoxProps) {
   const { t } = useTranslation()
   const [clientName, setClientName] = useState('')
   const [inputText, setInputText] = useState('')
   const [showTestConfig, setShowTestConfig] = useState(false)
   const [targetWhatsappPhone, setTargetWhatsappPhone] = useState(
-    DEFAULT_CONTACT_CONFIG.defaultWhatsappDigits,
+    contactInfo.defaultWhatsappDigits,
   )
+
+  useEffect(() => {
+    setTargetWhatsappPhone(contactInfo.defaultWhatsappDigits)
+  }, [contactInfo.defaultWhatsappDigits])
   const [messages, setMessages] = useState<readonly ChatMessage[]>(() => [
     {
       id: 'welcome-1',
