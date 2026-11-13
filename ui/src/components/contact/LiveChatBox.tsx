@@ -2,13 +2,22 @@ import { cn } from 'cn'
 import {
   MessageCircle,
   Minimize2,
+  RotateCcw,
   Send,
   Settings2,
   Sparkles,
+  UserCheck,
   WifiOff,
   X,
 } from 'lucide-react'
-import { useEffect, useRef, type FormEvent } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type FormEvent,
+  type KeyboardEvent,
+} from 'react'
 import { useChat } from '@/context/ChatContext'
 import { useNetworkStatus } from '@/hooks/useNetworkStatus'
 import { useTranslation } from '@/i18n'
@@ -17,6 +26,9 @@ export interface LiveChatBoxProps {
   isPopup?: boolean
   onClosePopup?: () => void
 }
+
+const MIN_TEXTAREA_HEIGHT_PX = 42
+const MAX_FOUR_LINES_HEIGHT_PX = 106
 
 export function LiveChatBox({
   isPopup = false,
@@ -28,6 +40,8 @@ export function LiveChatBox({
     messages,
     clientName,
     setClientName,
+    isChatStarted,
+    endChatSession,
     inputText,
     setInputText,
     selectedProduct,
@@ -40,12 +54,38 @@ export function LiveChatBox({
     buildWhatsappHref,
   } = useChat()
 
-  const messageInputRef = useRef<HTMLInputElement | null>(null)
+  const messageTextareaRef = useRef<HTMLTextAreaElement | null>(null)
   const threadContainerRef = useRef<HTMLDivElement | null>(null)
+  const [isTextareaOverflowing, setIsTextareaOverflowing] = useState(false)
+  const [textareaScrollRatio, setTextareaScrollRatio] = useState(0)
+
+  const syncTextareaMetrics = useCallback(() => {
+    const el = messageTextareaRef.current
+    if (!el) return
+    el.style.height = 'auto'
+    const fullScrollHeight = el.scrollHeight
+    const nextHeight = Math.min(
+      Math.max(fullScrollHeight, MIN_TEXTAREA_HEIGHT_PX),
+      MAX_FOUR_LINES_HEIGHT_PX,
+    )
+    el.style.height = `${nextHeight}px`
+
+    const maxScrollTop = el.scrollHeight - el.clientHeight
+    const overflowing = maxScrollTop > 2
+    setIsTextareaOverflowing(overflowing)
+    setTextareaScrollRatio(
+      overflowing ? Math.min(Math.max(el.scrollTop / maxScrollTop, 0), 1) : 0,
+    )
+  }, [])
+
+  // Dynamically resize textarea between 1 line (42px) and 4 lines max (106px)
+  useEffect(() => {
+    syncTextareaMetrics()
+  }, [inputText, isPopup, syncTextareaMetrics])
 
   useEffect(() => {
     if (selectedProduct && !isOffline) {
-      messageInputRef.current?.focus()
+      messageTextareaRef.current?.focus()
     }
   }, [selectedProduct, isOffline])
 
@@ -56,11 +96,38 @@ export function LiveChatBox({
     }
   }, [messages.length])
 
+  function handleTextareaScroll() {
+    const el = messageTextareaRef.current
+    if (!el) return
+    const maxScrollTop = el.scrollHeight - el.clientHeight
+    if (maxScrollTop <= 2) {
+      setIsTextareaOverflowing(false)
+      setTextareaScrollRatio(0)
+      return
+    }
+    setIsTextareaOverflowing(true)
+    setTextareaScrollRatio(
+      Math.min(Math.max(el.scrollTop / maxScrollTop, 0), 1),
+    )
+  }
+
   function handleSendMessage(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (isOffline) return
     sendMessage()
   }
+
+  function handleTextareaKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault()
+      if (!isOffline) {
+        sendMessage()
+      }
+    }
+  }
+
+  const lockedDisplayName =
+    clientName.trim() || t.contactPage.chat.anonymousClientLabel
 
   return (
     <section
@@ -201,12 +268,12 @@ export function LiveChatBox({
         </div>
       )}
 
-      {/* Message Thread */}
+      {/* Message Thread (Ultra-Slim Transparent Scrollbar Inside Chat) */}
       <div
         ref={threadContainerRef}
         className={cn(
-          'flex flex-col gap-3.5 overflow-y-auto p-5 sm:p-6',
-          isPopup ? 'h-60 sm:h-64' : 'h-80',
+          'tp-chat-scroll flex flex-col gap-3.5 overflow-y-auto p-5 sm:p-6',
+          isPopup ? 'h-56 sm:h-64' : 'h-80',
         )}
       >
         {messages.map((msg) => {
@@ -220,7 +287,7 @@ export function LiveChatBox({
                 {msg.senderName} · {msg.createdAt}
               </span>
               <div
-                className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+                className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap break-words ${
                   isClient
                     ? 'bg-stone-900 text-[#F5EFE6] dark:bg-[#D6C3A5] dark:text-stone-950'
                     : 'border border-[#E2D6C3] bg-[#F3ECE0]/90 text-stone-900 dark:border-stone-800 dark:bg-stone-900/90 dark:text-stone-100'
@@ -238,33 +305,82 @@ export function LiveChatBox({
         onSubmit={handleSendMessage}
         className="border-t border-[#E5DAC8] bg-[#F3ECE0]/85 p-4 sm:p-5 dark:border-stone-800 dark:bg-stone-900/75"
       >
-        <input
-          type="text"
-          disabled={isOffline}
-          value={clientName}
-          onChange={(e) => setClientName(e.target.value)}
-          placeholder={t.contactPage.chat.namePlaceholder}
-          className="mb-2.5 w-full rounded-xl border border-[#D5C7B2] bg-white px-4 py-2 text-xs text-stone-900 placeholder:text-stone-400 focus:border-[#8C6A3E] focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 dark:border-stone-800 dark:bg-stone-950 dark:text-stone-100 dark:placeholder:text-stone-500 dark:focus:border-[#D6C3A5]"
-        />
+        {/* Editable Name Before First Message vs. Locked Name + End Chat Button After First Message */}
+        {isChatStarted ? (
+          <div className="mb-2.5 flex items-center justify-between gap-2 rounded-xl border border-[#D5C7B2]/80 bg-[#FAF6EE] px-3.5 py-2 text-xs dark:border-stone-800 dark:bg-stone-950/80">
+            <span className="flex min-w-0 items-center gap-2 text-stone-700 dark:text-stone-300">
+              <UserCheck
+                className="size-3.5 shrink-0 text-[#8C6A3E] dark:text-[#D6C3A5]"
+                aria-hidden="true"
+              />
+              <span className="shrink-0 text-stone-500 dark:text-stone-400">
+                {t.contactPage.chat.lockedNameLabel}
+              </span>
+              <strong className="truncate font-semibold text-stone-900 dark:text-stone-100">
+                {lockedDisplayName}
+              </strong>
+            </span>
 
-        <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={endChatSession}
+              className="inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-lg border border-[#C8B89E] bg-white px-2.5 py-1 text-[11px] font-semibold text-stone-700 transition-colors hover:border-stone-900 hover:bg-stone-900 hover:text-[#F5EFE6] dark:border-stone-700 dark:bg-stone-900 dark:text-stone-300 dark:hover:border-[#D6C3A5] dark:hover:bg-[#D6C3A5] dark:hover:text-stone-950"
+            >
+              <RotateCcw className="size-3" aria-hidden="true" />
+              <span>{t.contactPage.chat.endChatButton}</span>
+            </button>
+          </div>
+        ) : (
           <input
-            ref={messageInputRef}
             type="text"
             disabled={isOffline}
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-            placeholder={
-              isOffline
-                ? t.contactPage.chat.statusOffline
-                : t.contactPage.chat.messagePlaceholder
-            }
-            className="flex-1 rounded-xl border border-[#D5C7B2] bg-white px-3.5 py-2.5 text-sm text-stone-900 placeholder:text-stone-400 focus:border-[#8C6A3E] focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 dark:border-stone-800 dark:bg-stone-950 dark:text-stone-100 dark:placeholder:text-stone-500 dark:focus:border-[#D6C3A5]"
+            value={clientName}
+            onChange={(e) => setClientName(e.target.value)}
+            placeholder={t.contactPage.chat.namePlaceholder}
+            maxLength={50}
+            className="mb-2.5 w-full rounded-xl border border-[#D5C7B2] bg-white px-4 py-2 text-xs text-stone-900 placeholder:text-stone-400 focus:border-[#8C6A3E] focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 dark:border-stone-800 dark:bg-stone-950 dark:text-stone-100 dark:placeholder:text-stone-500 dark:focus:border-[#D6C3A5]"
           />
+        )}
+
+        {/* Auto-Expanding 1-to-4 Line Wrapping Textarea with Inside Floating Dot Scroll Indicator */}
+        <div className="flex items-end gap-2">
+          <div className="relative flex flex-1">
+            <textarea
+              ref={messageTextareaRef}
+              rows={1}
+              disabled={isOffline}
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              onScroll={handleTextareaScroll}
+              onKeyDown={handleTextareaKeyDown}
+              placeholder={
+                isOffline
+                  ? t.contactPage.chat.statusOffline
+                  : t.contactPage.chat.messagePlaceholder
+              }
+              className="max-h-[106px] min-h-[42px] w-full resize-none overflow-y-auto rounded-xl border border-[#D5C7B2] bg-white py-2.5 pr-6 pl-3.5 text-sm leading-5 whitespace-pre-wrap break-words text-stone-900 [scrollbar-width:none] placeholder:text-stone-400 focus:border-[#8C6A3E] focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 dark:border-stone-800 dark:bg-stone-950 dark:text-stone-100 dark:placeholder:text-stone-500 dark:focus:border-[#D6C3A5] [&::-webkit-scrollbar]:hidden"
+            />
+
+            {/* Transparent Track + Little Floating Dot Inside the Textbox (Only When > 4 Lines) */}
+            {isTextareaOverflowing && (
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute top-2.5 right-2 bottom-2.5 w-2"
+              >
+                <span
+                  style={{
+                    top: `calc(${textareaScrollRatio * 100}% - ${textareaScrollRatio * 8}px)`,
+                  }}
+                  className="absolute left-0 h-2 w-2 rounded-full bg-[#8C6A3E] shadow-[0_0_6px_rgba(140,106,62,0.55)] transition-[top] duration-75 dark:bg-[#D6C3A5] dark:shadow-[0_0_6px_rgba(214,195,165,0.65)]"
+                />
+              </div>
+            )}
+          </div>
+
           <button
             type="submit"
             disabled={isOffline}
-            className="inline-flex cursor-pointer items-center gap-1.5 rounded-xl bg-stone-900 px-4 py-2.5 text-xs font-semibold tracking-wider text-[#F5EFE6] uppercase transition-colors hover:bg-stone-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-[#E8DAC2] dark:text-stone-950 dark:hover:bg-[#F3E9D7]"
+            className="inline-flex h-[42px] shrink-0 cursor-pointer items-center gap-1.5 rounded-xl bg-stone-900 px-4 text-xs font-semibold tracking-wider text-[#F5EFE6] uppercase transition-colors hover:bg-stone-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-[#E8DAC2] dark:text-stone-950 dark:hover:bg-[#F3E9D7]"
           >
             <span>{t.contactPage.chat.sendButton}</span>
             <Send className="size-3.5" aria-hidden="true" />

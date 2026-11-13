@@ -22,6 +22,14 @@ export interface TranslationDictionary {
     closeAriaLabel: string
     sectionTitle: string
   }
+  visitorModal: {
+    eyebrow: string
+    title: string
+    description: string
+    inputPlaceholder: string
+    confirmButton: string
+    skipButton: string
+  }
   theme: {
     lightModeLabel: string
     darkModeLabel: string
@@ -41,6 +49,7 @@ export interface TranslationDictionary {
     eyebrow: string
     title: string
     subtitle: string
+    personalizedSubtitlePrefix: string
     allCategoriesLabel: string
     priceUnitLabel: string
     dimensionsLabel: string
@@ -52,6 +61,7 @@ export interface TranslationDictionary {
   contactPage: {
     eyebrow: string
     title: string
+    personalizedTitle: string
     subtitle: string
     directChannelsTitle: string
     phoneLabel: string
@@ -75,8 +85,12 @@ export interface TranslationDictionary {
       productInquiryTemplate: string
       selectedProductPrefix: string
       welcomeMessage: string
+      personalizedWelcomeMessage: string
       autoReplyMessage: string
       namePlaceholder: string
+      lockedNameLabel: string
+      endChatButton: string
+      anonymousClientLabel: string
       messagePlaceholder: string
       sendButton: string
       openWhatsappButton: string

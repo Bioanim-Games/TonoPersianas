@@ -17,6 +17,15 @@ export const es: TranslationDictionary = {
     closeAriaLabel: 'Cerrar menú de navegación',
     sectionTitle: 'Navegación Principal',
   },
+  visitorModal: {
+    eyebrow: 'ATENCIÓN PERSONALIZADA',
+    title: '¿Cómo te gustaría que te llamemos?',
+    description:
+      'En Toño Persianas nos encanta brindar un trato cálido y a la medida. Si gustas, compártenos tu nombre (totalmente opcional).',
+    inputPlaceholder: 'Escribe tu nombre (opcional)...',
+    confirmButton: 'Continuar',
+    skipButton: 'Omitir por ahora',
+  },
   theme: {
     lightModeLabel: 'Luz de Día',
     darkModeLabel: 'Modo Nocturno',
@@ -57,6 +66,7 @@ export const es: TranslationDictionary = {
     title: 'Colección de Persianas a Medida',
     subtitle:
       'Explora nuestras líneas de control solar, privacidad y diseño textil. Cada persiana es fabricada a la medida exacta de tus espacios.',
+    personalizedSubtitlePrefix: 'Bienvenido, {name}. ',
     allCategoriesLabel: 'Todas las Colecciones',
     priceUnitLabel: 'm² desde',
     dimensionsLabel: 'Medidas disponibles',
@@ -73,6 +83,7 @@ export const es: TranslationDictionary = {
   contactPage: {
     eyebrow: 'ATENCIÓN PERSONALIZADA Y UBICACIÓN',
     title: 'Hablemos de tu Proyecto',
+    personalizedTitle: '{name}, hablemos de tu proyecto',
     subtitle:
       'Escríbenos en nuestro chat en línea conectado con WhatsApp Business, contáctanos por teléfono o correo, o visítanos en nuestra ubicación.',
     directChannelsTitle: 'Canales de Atención Directa',
@@ -101,9 +112,14 @@ export const es: TranslationDictionary = {
       selectedProductPrefix: 'Modelo de interés:',
       welcomeMessage:
         '¡Hola! Bienvenido a Toño Persianas. ¿En qué modelo o medidas podemos asesorarte hoy?',
+      personalizedWelcomeMessage:
+        '¡Hola {name}! Bienvenido a Toño Persianas. ¿En qué modelo o medidas podemos asesorarte hoy?',
       autoReplyMessage:
         'Mensaje registrado. Puedes seguir escribiendo aquí o pulsar "Continuar en WhatsApp" para enviar esta conversación directo a nuestro WhatsApp.',
       namePlaceholder: 'Tu nombre (opcional)',
+      lockedNameLabel: 'Chateando como:',
+      endChatButton: 'Finalizar chat',
+      anonymousClientLabel: 'Invitado',
       messagePlaceholder: 'Escribe tu mensaje o las medidas de tu ventana...',
       sendButton: 'Enviar',
       openWhatsappButton: 'Continuar en WhatsApp',

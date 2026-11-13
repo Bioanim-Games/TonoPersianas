@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { CategoryFilterBar } from '@/components/products/CategoryFilterBar'
 import { ProductCard } from '@/components/products/ProductCard'
 import { ProductCardSkeleton } from '@/components/products/ProductCardSkeleton'
+import { useChat } from '@/context/ChatContext'
 import { useTranslation } from '@/i18n'
 import {
   fetchCategories,
@@ -15,6 +16,8 @@ const SKELETON_CARD_COUNT = 6
 
 export function ProductsPage() {
   const { t } = useTranslation()
+  const { clientName } = useChat()
+  const trimmedName = clientName.trim()
   const [categories, setCategories] = useState<readonly CategoryItem[]>(
     () => getCachedCategories() ?? [],
   )
@@ -57,6 +60,14 @@ export function ProductsPage() {
             {t.productsPage.title}
           </h1>
           <p className="mt-4 text-base leading-relaxed text-stone-700 sm:text-lg dark:text-stone-300/85">
+            {trimmedName && (
+              <span className="font-medium text-[#7A5930] dark:text-[#E8DAC2]">
+                {t.productsPage.personalizedSubtitlePrefix.replace(
+                  '{name}',
+                  trimmedName,
+                )}
+              </span>
+            )}
             {t.productsPage.subtitle}
           </p>
         </header>

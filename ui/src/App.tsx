@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router'
 import { ChatPopupWidget } from '@/components/contact/ChatPopupWidget'
 import { Navbar } from '@/components/layout/Navbar'
+import { VisitorNameModal } from '@/components/layout/VisitorNameModal'
 import { ChatProvider } from '@/context/ChatContext'
 import { I18nProvider } from '@/i18n'
 import { ContactPage } from '@/pages/ContactPage'
@@ -21,6 +22,7 @@ export function App() {
                 <Route path="/productos" element={<ProductsPage />} />
                 <Route path="/contacto" element={<ContactPage />} />
               </Routes>
+              <VisitorNameModal />
               <ChatPopupWidget />
             </div>
           </BrowserRouter>
