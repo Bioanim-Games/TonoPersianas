@@ -62,6 +62,7 @@ export const es: TranslationDictionary = {
     dimensionsLabel: 'Medidas disponibles',
     inquireCta: 'Consultar este modelo',
     featuredBadge: 'Destacado',
+    imageOfflineLabel: 'Imagen no disponible sin conexión',
     lightControlLabels: {
       duo: 'Dúo / Sheer Elegance',
       blackout: 'Blackout 100%',

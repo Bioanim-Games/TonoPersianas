@@ -46,6 +46,7 @@ export interface TranslationDictionary {
     dimensionsLabel: string
     inquireCta: string
     featuredBadge: string
+    imageOfflineLabel: string
     lightControlLabels: Record<LightControlType, string>
   }
   contactPage: {

@@ -1,7 +1,9 @@
-import { ArrowUpRight, Maximize2, SunMedium } from 'lucide-react'
+import { ArrowUpRight, Maximize2, SunMedium, WifiOff } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 import blindCustomerPhoto from '@/assets/495031512_18506527366010357_2839919073663869084_n.jpg'
 import blindRoomPhoto from '@/assets/Gemini_Generated_Image_866yuw866yuw866y.jpg'
+import { useNetworkStatus } from '@/hooks/useNetworkStatus'
 import { useTranslation } from '@/i18n'
 import type { ProductItem } from '@/types/catalog'
 
@@ -12,6 +14,8 @@ export interface ProductCardProps {
 
 export function ProductCard({ product, index }: ProductCardProps) {
   const { t } = useTranslation()
+  const { isOnline } = useNetworkStatus()
+  const [imageError, setImageError] = useState(false)
   const previewImage = index % 2 === 0 ? blindRoomPhoto : blindCustomerPhoto
   const lightLabel = t.productsPage.lightControlLabels[product.light_control]
   const formattedPrice = new Intl.NumberFormat('es-MX', {
@@ -20,15 +24,40 @@ export function ProductCard({ product, index }: ProductCardProps) {
     maximumFractionDigits: 0,
   }).format(product.base_price_m2)
 
+  useEffect(() => {
+    if (isOnline && imageError) {
+      setImageError(false)
+    }
+  }, [isOnline, imageError])
+
   return (
     <article className="group flex flex-col overflow-hidden rounded-2xl border border-[#DFD3C0] bg-[#FCF9F4] shadow-[0_12px_30px_rgba(28,24,21,0.07)] transition-all duration-300 hover:-translate-y-1 hover:border-[#B89768] hover:shadow-[0_20px_45px_rgba(28,24,21,0.13)] dark:border-stone-800/90 dark:bg-[#25201C] dark:shadow-[0_14px_35px_rgba(0,0,0,0.35)] dark:hover:border-[#D6C3A5]/55 dark:hover:shadow-[0_20px_45px_rgba(0,0,0,0.5)]">
       {/* Blind Visual Showcase Frame */}
       <div className="relative h-64 w-full overflow-hidden bg-stone-200 dark:bg-stone-900">
-        <img
-          src={previewImage}
-          alt={product.name}
-          className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
-        />
+        {imageError ? (
+          <div
+            role="img"
+            aria-label={t.productsPage.imageOfflineLabel}
+            className="flex h-full w-full flex-col items-center justify-center gap-2.5 bg-gradient-to-b from-[#332B24] via-[#27211C] to-[#1D1814] px-6 text-center dark:from-stone-900 dark:via-[#1E1916] dark:to-stone-950"
+          >
+            <span className="flex h-12 w-12 items-center justify-center rounded-full border border-[#D6C3A5]/35 bg-stone-950/60 shadow-inner">
+              <WifiOff
+                className="size-5 text-[#D6C3A5]"
+                aria-hidden="true"
+              />
+            </span>
+            <span className="text-[11px] font-medium tracking-[0.18em] text-[#E8DAC2]/85 uppercase">
+              {t.productsPage.imageOfflineLabel}
+            </span>
+          </div>
+        ) : (
+          <img
+            src={previewImage}
+            alt={product.name}
+            onError={() => setImageError(true)}
+            className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+          />
+        )}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-stone-950/70 via-transparent to-stone-950/25 dark:from-[#25201C] dark:via-transparent dark:to-stone-950/35" />
 
         {/* Top Badges */}
