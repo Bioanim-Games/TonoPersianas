@@ -35,6 +35,20 @@ CREATE TABLE IF NOT EXISTS products (
 
 CREATE INDEX IF NOT EXISTS idx_products_category_id ON products(category_id);
 CREATE INDEX IF NOT EXISTS idx_products_slug ON products(slug);
+
+CREATE TABLE IF NOT EXISTS business_contact_info (
+    id INTEGER PRIMARY KEY CHECK (id = 1),
+    display_phone TEXT NOT NULL,
+    phone_href TEXT NOT NULL,
+    default_whatsapp_digits TEXT NOT NULL,
+    email TEXT NOT NULL,
+    email_href TEXT NOT NULL,
+    facebook_url TEXT NOT NULL,
+    instagram_url TEXT NOT NULL,
+    google_maps_url TEXT NOT NULL,
+    google_maps_embed_url TEXT NOT NULL,
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
 """
 
 

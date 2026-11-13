@@ -104,57 +104,85 @@ INITIAL_PRODUCTS: tuple[
     ),
 )
 
+INITIAL_CONTACT_INFO: tuple[str, str, str, str, str, str, str, str, str] = (
+    "+52 33 3377 3415",
+    "tel:+523333773415",
+    "523333773415",
+    "tpersianas@gmail.com",
+    "mailto:tpersianas@gmail.com",
+    "https://www.facebook.com/tonopersianas/?locale=es_LA",
+    "https://www.instagram.com/tonopersianas/?hl=es",
+    "https://www.google.com/maps/place/To%C3%B1o+Persianas/data=!4m2!3m1!1s0x0:0x42ab028be436b030?sa=X&ved=1t:2428&ictx=111",
+    "https://maps.google.com/maps?q=To%C3%B1o+Persianas+Zapopan+Jalisco&t=&z=16&ie=UTF8&iwloc=&output=embed",
+)
+
 
 def seed_initial_data() -> None:
-    """Seed Toño Persianas categories and products if the database is empty."""
+    """Seed Toño Persianas catalog and business contact info if tables are empty."""
     with get_db_connection() as conn:
-        row = conn.execute("SELECT COUNT(*) AS count FROM categories;").fetchone()
-        if row and int(row["count"]) > 0:
-            return
+        cat_row = conn.execute(
+            "SELECT COUNT(*) AS count FROM categories;"
+        ).fetchone()
+        if not cat_row or int(cat_row["count"]) == 0:
+            conn.executemany(
+                """
+                INSERT INTO categories (slug, name, description, display_order)
+                VALUES (?, ?, ?, ?);
+                """,
+                INITIAL_CATEGORIES,
+            )
 
-        conn.executemany(
-            """
-            INSERT INTO categories (slug, name, description, display_order)
-            VALUES (?, ?, ?, ?);
-            """,
-            INITIAL_CATEGORIES,
-        )
+            category_rows = conn.execute(
+                "SELECT id, slug FROM categories;"
+            ).fetchall()
+            category_map = {str(r["slug"]): int(r["id"]) for r in category_rows}
 
-        category_rows = conn.execute(
-            "SELECT id, slug FROM categories;"
-        ).fetchall()
-        category_map = { str(r["slug"]): int(r["id"]) for r in category_rows }
+            for (
+                cat_slug,
+                sku,
+                slug,
+                name,
+                short_desc,
+                desc,
+                light_control,
+                base_price_m2,
+                image_url,
+                is_featured,
+            ) in INITIAL_PRODUCTS:
+                conn.execute(
+                    """
+                    INSERT INTO products (
+                        category_id, sku, slug, name, short_description,
+                        description, light_control, base_price_m2, image_url, is_featured
+                    )
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+                    """,
+                    (
+                        category_map[cat_slug],
+                        sku,
+                        slug,
+                        name,
+                        short_desc,
+                        desc,
+                        light_control,
+                        base_price_m2,
+                        image_url,
+                        is_featured,
+                    ),
+                )
 
-        for (
-            cat_slug,
-            sku,
-            slug,
-            name,
-            short_desc,
-            desc,
-            light_control,
-            base_price_m2,
-            image_url,
-            is_featured,
-        ) in INITIAL_PRODUCTS:
+        contact_row = conn.execute(
+            "SELECT COUNT(*) AS count FROM business_contact_info;"
+        ).fetchone()
+        if not contact_row or int(contact_row["count"]) == 0:
             conn.execute(
                 """
-                INSERT INTO products (
-                    category_id, sku, slug, name, short_description,
-                    description, light_control, base_price_m2, image_url, is_featured
+                INSERT INTO business_contact_info (
+                    id, display_phone, phone_href, default_whatsapp_digits,
+                    email, email_href, facebook_url, instagram_url,
+                    google_maps_url, google_maps_embed_url
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+                VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?);
                 """,
-                (
-                    category_map[cat_slug],
-                    sku,
-                    slug,
-                    name,
-                    short_desc,
-                    desc,
-                    light_control,
-                    base_price_m2,
-                    image_url,
-                    is_featured,
-                ),
+                INITIAL_CONTACT_INFO,
             )

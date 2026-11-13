@@ -5,6 +5,7 @@ from api.core.security import configure_security
 from api.db.schema import init_schema
 from api.db.seed import seed_initial_data
 from api.routers.catalog import router as catalog_router
+from api.routers.contact import router as contact_router
 
 
 @asynccontextmanager
@@ -22,6 +23,7 @@ app = FastAPI(
 
 configure_security(app)
 app.include_router(catalog_router)
+app.include_router(contact_router)
 
 
 @app.get("/api/health")
