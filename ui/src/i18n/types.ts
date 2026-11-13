@@ -17,6 +17,11 @@ export interface TranslationDictionary {
     tagline: string
   }
   nav: Record<NavRouteId, string>
+  theme: {
+    lightModeLabel: string
+    darkModeLabel: string
+    toggleAriaLabel: string
+  }
   hero: {
     eyebrow: string
     titleLine1: string

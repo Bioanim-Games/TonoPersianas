@@ -12,6 +12,11 @@ export const es: TranslationDictionary = {
     products: 'Productos',
     contact: 'Contacto',
   },
+  theme: {
+    lightModeLabel: 'Luz de Día',
+    darkModeLabel: 'Modo Nocturno',
+    toggleAriaLabel: 'Cambiar entre modo claro y oscuro',
+  },
   hero: {
     eyebrow: 'COLECCIÓN ARQUITECTÓNICA RESIDENCIAL',
     titleLine1: 'La elegancia de la luz,',
@@ -76,7 +81,7 @@ export const es: TranslationDictionary = {
     openMapsCta: 'Abrir ubicación en Google Maps',
     chat: {
       title: 'Chat en Línea · Toño Persianas',
-      statusOnline: 'Conectado con WhatsApp Business',
+      statusOnline: 'Conectado con WhatsApp Business y Base de Datos',
       selectedProductPrefix: 'Modelo de interés:',
       welcomeMessage:
         '¡Hola! Bienvenido a Toño Persianas. ¿En qué modelo o medidas podemos asesorarte hoy?',
@@ -88,7 +93,7 @@ export const es: TranslationDictionary = {
       openWhatsappButton: 'Continuar en WhatsApp',
       testModeTitle: 'Modo Prueba WhatsApp (Teléfono Personal)',
       testModeDescription:
-        'Ingresa tu número personal (con código de país, ej. 52133...) para probar el envío de WhatsApp sin usar el teléfono oficial.',
+        'Ingresa tu número personal (con código de país, ej. 5233...) para probar el envío de WhatsApp sin usar el teléfono oficial.',
       testPhonePlaceholder: 'Ej. 523333773415',
     },
   },

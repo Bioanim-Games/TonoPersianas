@@ -21,15 +21,15 @@ export function ProductCard({ product, index }: ProductCardProps) {
   }).format(product.base_price_m2)
 
   return (
-    <article className="group flex flex-col overflow-hidden rounded-2xl border border-stone-800/90 bg-[#25201C] shadow-[0_14px_35px_rgba(0,0,0,0.35)] transition-all duration-300 hover:-translate-y-1 hover:border-[#D6C3A5]/55 hover:shadow-[0_20px_45px_rgba(0,0,0,0.5)]">
+    <article className="group flex flex-col overflow-hidden rounded-2xl border border-[#DFD3C0] bg-[#FCF9F4] shadow-[0_12px_30px_rgba(28,24,21,0.07)] transition-all duration-300 hover:-translate-y-1 hover:border-[#B89768] hover:shadow-[0_20px_45px_rgba(28,24,21,0.13)] dark:border-stone-800/90 dark:bg-[#25201C] dark:shadow-[0_14px_35px_rgba(0,0,0,0.35)] dark:hover:border-[#D6C3A5]/55 dark:hover:shadow-[0_20px_45px_rgba(0,0,0,0.5)]">
       {/* Blind Visual Showcase Frame */}
-      <div className="relative h-64 w-full overflow-hidden bg-stone-900">
+      <div className="relative h-64 w-full overflow-hidden bg-stone-200 dark:bg-stone-900">
         <img
           src={previewImage}
           alt={product.name}
           className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
         />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#25201C] via-transparent to-stone-950/35" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-stone-950/70 via-transparent to-stone-950/25 dark:from-[#25201C] dark:via-transparent dark:to-stone-950/35" />
 
         {/* Top Badges */}
         <div className="absolute top-3.5 right-3.5 left-3.5 flex items-center justify-between gap-2">
@@ -56,44 +56,44 @@ export function ProductCard({ product, index }: ProductCardProps) {
         </div>
       </div>
 
-      {/* Warm Taupe Card Body */}
+      {/* Dual-Theme Card Body */}
       <div className="flex flex-1 flex-col justify-between p-6 text-left">
         <div>
-          <h2 className="font-heading text-2xl font-medium text-stone-100 group-hover:text-[#E8DAC2]">
+          <h2 className="font-heading text-2xl font-medium text-stone-900 group-hover:text-[#7A5930] dark:text-stone-100 dark:group-hover:text-[#E8DAC2]">
             {product.name}
           </h2>
-          <p className="mt-2 text-sm font-medium text-stone-300">
+          <p className="mt-2 text-sm font-medium text-stone-700 dark:text-stone-300">
             {product.short_description}
           </p>
-          <p className="mt-2.5 text-xs leading-relaxed text-stone-400">
+          <p className="mt-2.5 text-xs leading-relaxed text-stone-600 dark:text-stone-400">
             {product.description}
           </p>
         </div>
 
-        <div className="mt-6 border-t border-stone-800 pt-4">
+        <div className="mt-6 border-t border-[#E5DAC8] pt-4 dark:border-stone-800">
           {/* Dimensions & Price Row */}
           <div className="flex items-end justify-between gap-3">
             <div>
-              <span className="flex items-center gap-1 text-[11px] tracking-wider text-stone-400 uppercase">
+              <span className="flex items-center gap-1 text-[11px] tracking-wider text-stone-500 uppercase dark:text-stone-400">
                 <Maximize2
-                  className="size-3 text-[#D6C3A5]"
+                  className="size-3 text-[#8C6A3E] dark:text-[#D6C3A5]"
                   aria-hidden="true"
                 />
                 {t.productsPage.dimensionsLabel}
               </span>
-              <span className="mt-0.5 block text-xs font-medium text-stone-200">
+              <span className="mt-0.5 block text-xs font-medium text-stone-800 dark:text-stone-200">
                 {product.min_width_cm}–{product.max_width_cm} cm ×{' '}
                 {product.min_height_cm}–{product.max_height_cm} cm
               </span>
             </div>
 
             <div className="text-right">
-              <span className="block text-[11px] tracking-wider text-stone-400 uppercase">
+              <span className="block text-[11px] tracking-wider text-stone-500 uppercase dark:text-stone-400">
                 {t.productsPage.priceUnitLabel}
               </span>
-              <span className="font-heading text-xl font-semibold text-[#E8DAC2]">
+              <span className="font-heading text-xl font-semibold text-stone-900 dark:text-[#E8DAC2]">
                 {formattedPrice}{' '}
-                <span className="font-sans text-xs font-normal text-stone-400">
+                <span className="font-sans text-xs font-normal text-stone-500 dark:text-stone-400">
                   {product.currency}
                 </span>
               </span>
@@ -103,7 +103,7 @@ export function ProductCard({ product, index }: ProductCardProps) {
           {/* Action Link to Contact Live Chat with Pre-selected Blind */}
           <Link
             to={`/contacto?producto=${product.slug}`}
-            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-[#D6C3A5]/40 bg-stone-900/90 px-4 py-3 text-xs font-semibold tracking-[0.18em] text-[#E8DAC2] uppercase transition-all duration-200 hover:border-[#D6C3A5] hover:bg-[#D6C3A5] hover:text-stone-950"
+            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-stone-900 bg-stone-900 px-4 py-3 text-xs font-semibold tracking-[0.18em] text-[#F5EFE6] uppercase transition-all duration-200 hover:bg-stone-800 dark:border-[#D6C3A5]/40 dark:bg-stone-900/90 dark:text-[#E8DAC2] dark:hover:border-[#D6C3A5] dark:hover:bg-[#D6C3A5] dark:hover:text-stone-950"
           >
             <span>{t.productsPage.inquireCta}</span>
             <ArrowUpRight className="size-4" aria-hidden="true" />

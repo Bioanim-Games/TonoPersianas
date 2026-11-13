@@ -180,12 +180,29 @@ const FALLBACK_PRODUCTS: readonly ProductItem[] = [
   },
 ]
 
+let cachedCategories: readonly CategoryItem[] | null = null
+let cachedProducts: readonly ProductItem[] | null = null
+
+export function getCachedCategories(): readonly CategoryItem[] | null {
+  return cachedCategories
+}
+
+export function getCachedProducts(): readonly ProductItem[] | null {
+  return cachedProducts
+}
+
 export async function fetchCategories(): Promise<readonly CategoryItem[]> {
   try {
     const res = await fetch('/api/categories')
-    if (!res.ok) return FALLBACK_CATEGORIES
-    return (await res.json()) as CategoryItem[]
+    if (!res.ok) {
+      cachedCategories = FALLBACK_CATEGORIES
+      return FALLBACK_CATEGORIES
+    }
+    const data = (await res.json()) as CategoryItem[]
+    cachedCategories = data
+    return data
   } catch {
+    cachedCategories = FALLBACK_CATEGORIES
     return FALLBACK_CATEGORIES
   }
 }
@@ -193,9 +210,15 @@ export async function fetchCategories(): Promise<readonly CategoryItem[]> {
 export async function fetchProducts(): Promise<readonly ProductItem[]> {
   try {
     const res = await fetch('/api/products')
-    if (!res.ok) return FALLBACK_PRODUCTS
-    return (await res.json()) as ProductItem[]
+    if (!res.ok) {
+      cachedProducts = FALLBACK_PRODUCTS
+      return FALLBACK_PRODUCTS
+    }
+    const data = (await res.json()) as ProductItem[]
+    cachedProducts = data
+    return data
   } catch {
+    cachedProducts = FALLBACK_PRODUCTS
     return FALLBACK_PRODUCTS
   }
 }
