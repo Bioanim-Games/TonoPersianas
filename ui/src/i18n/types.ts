@@ -17,6 +17,11 @@ export interface TranslationDictionary {
     tagline: string
   }
   nav: Record<NavRouteId, string>
+  mobileMenu: {
+    openAriaLabel: string
+    closeAriaLabel: string
+    sectionTitle: string
+  }
   theme: {
     lightModeLabel: string
     darkModeLabel: string

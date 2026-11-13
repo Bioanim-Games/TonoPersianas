@@ -12,6 +12,11 @@ export const es: TranslationDictionary = {
     products: 'Productos',
     contact: 'Contacto',
   },
+  mobileMenu: {
+    openAriaLabel: 'Abrir menú de navegación',
+    closeAriaLabel: 'Cerrar menú de navegación',
+    sectionTitle: 'Navegación Principal',
+  },
   theme: {
     lightModeLabel: 'Luz de Día',
     darkModeLabel: 'Modo Nocturno',
