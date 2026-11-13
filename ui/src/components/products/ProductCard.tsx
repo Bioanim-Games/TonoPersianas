@@ -1,8 +1,8 @@
-import { ArrowUpRight, Maximize2, SunMedium, WifiOff } from 'lucide-react'
+import { Maximize2, MessageCircle, SunMedium, WifiOff } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router'
 import blindCustomerPhoto from '@/assets/495031512_18506527366010357_2839919073663869084_n.jpg'
 import blindRoomPhoto from '@/assets/Gemini_Generated_Image_866yuw866yuw866y.jpg'
+import { useChat } from '@/context/ChatContext'
 import { useNetworkStatus } from '@/hooks/useNetworkStatus'
 import { useTranslation } from '@/i18n'
 import type { ProductItem } from '@/types/catalog'
@@ -14,6 +14,7 @@ export interface ProductCardProps {
 
 export function ProductCard({ product, index }: ProductCardProps) {
   const { t } = useTranslation()
+  const { openProductInquiry } = useChat()
   const { isOnline } = useNetworkStatus()
   const [imageError, setImageError] = useState(false)
   const previewImage = index % 2 === 0 ? blindRoomPhoto : blindCustomerPhoto
@@ -129,14 +130,15 @@ export function ProductCard({ product, index }: ProductCardProps) {
             </div>
           </div>
 
-          {/* Action Link to Contact Live Chat with Pre-selected Blind */}
-          <Link
-            to={`/contacto?producto=${product.slug}`}
-            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-stone-900 bg-stone-900 px-4 py-3 text-xs font-semibold tracking-[0.18em] text-[#F5EFE6] uppercase transition-all duration-200 hover:bg-stone-800 dark:border-[#D6C3A5]/40 dark:bg-stone-900/90 dark:text-[#E8DAC2] dark:hover:border-[#D6C3A5] dark:hover:bg-[#D6C3A5] dark:hover:text-stone-950"
+          {/* In-Page Chat Popup Trigger with Pre-Filled Product Inquiry */}
+          <button
+            type="button"
+            onClick={() => openProductInquiry(product)}
+            className="mt-4 inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-stone-900 bg-stone-900 px-4 py-3 text-xs font-semibold tracking-[0.18em] text-[#F5EFE6] uppercase transition-all duration-200 hover:bg-stone-800 dark:border-[#D6C3A5]/40 dark:bg-stone-900/90 dark:text-[#E8DAC2] dark:hover:border-[#D6C3A5] dark:hover:bg-[#D6C3A5] dark:hover:text-stone-950"
           >
             <span>{t.productsPage.inquireCta}</span>
-            <ArrowUpRight className="size-4" aria-hidden="true" />
-          </Link>
+            <MessageCircle className="size-4" aria-hidden="true" />
+          </button>
         </div>
       </div>
     </article>

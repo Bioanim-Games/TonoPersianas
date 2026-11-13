@@ -1,33 +1,16 @@
-import { useEffect, useState } from 'react'
-import { useSearchParams } from 'react-router'
+import { useEffect } from 'react'
 import { ContactInfoPanel } from '@/components/contact/ContactInfoPanel'
 import { LiveChatBox } from '@/components/contact/LiveChatBox'
 import { LocationMapCard } from '@/components/contact/LocationMapCard'
-import {
-  DEFAULT_CONTACT_CONFIG,
-  type ContactInfoData,
-} from '@/config/contactConfig'
+import { useChat } from '@/context/ChatContext'
 import { useTranslation } from '@/i18n'
-import { fetchContactInfo, getCachedContactInfo } from '@/services/contactApi'
 
 export function ContactPage() {
   const { t } = useTranslation()
-  const [searchParams] = useSearchParams()
-  const selectedProductSlug = searchParams.get('producto')
-  const [contactInfo, setContactInfo] = useState<ContactInfoData>(
-    () => getCachedContactInfo() ?? DEFAULT_CONTACT_CONFIG,
-  )
+  const { contactInfo } = useChat()
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' })
-    let active = true
-    fetchContactInfo().then((data) => {
-      if (!active) return
-      setContactInfo(data)
-    })
-    return () => {
-      active = false
-    }
   }, [])
 
   return (
@@ -46,19 +29,20 @@ export function ContactPage() {
           </p>
         </header>
 
-        {/* Two-Column Studio Layout */}
+        {/* Top Row: Direct Contact Channels (Left) + Shared Live Chat (Right) */}
         <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
-          <div className="flex flex-col gap-8 lg:col-span-6">
+          <div className="lg:col-span-6">
             <ContactInfoPanel contactInfo={contactInfo} />
-            <LocationMapCard contactInfo={contactInfo} />
           </div>
 
           <div className="lg:col-span-6">
-            <LiveChatBox
-              selectedProductSlug={selectedProductSlug}
-              contactInfo={contactInfo}
-            />
+            <LiveChatBox />
           </div>
+        </div>
+
+        {/* Bottom Row: Full-Width Location Map Card */}
+        <div className="mt-8 w-full">
+          <LocationMapCard contactInfo={contactInfo} />
         </div>
       </div>
     </main>

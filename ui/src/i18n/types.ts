@@ -69,6 +69,10 @@ export interface TranslationDictionary {
       statusOffline: string
       offlineBannerTitle: string
       offlineBannerDescription: string
+      openPopupAriaLabel: string
+      closePopupAriaLabel: string
+      floatingLauncherLabel: string
+      productInquiryTemplate: string
       selectedProductPrefix: string
       welcomeMessage: string
       autoReplyMessage: string

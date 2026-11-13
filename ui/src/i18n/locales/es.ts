@@ -93,6 +93,11 @@ export const es: TranslationDictionary = {
       offlineBannerTitle: 'Modo sin conexión activo',
       offlineBannerDescription:
         'Puedes explorar el catálogo y nuestros datos de contacto sin internet. El chat en línea y el envío a WhatsApp se reactivarán automáticamente al recuperar tu conexión.',
+      openPopupAriaLabel: 'Abrir chat de asesoría en línea',
+      closePopupAriaLabel: 'Minimizar ventana de chat',
+      floatingLauncherLabel: 'Chat en Línea',
+      productInquiryTemplate:
+        'Hola, me interesa cotizar el modelo {name} ({sku}). ¿Me podrían brindar más información?',
       selectedProductPrefix: 'Modelo de interés:',
       welcomeMessage:
         '¡Hola! Bienvenido a Toño Persianas. ¿En qué modelo o medidas podemos asesorarte hoy?',
