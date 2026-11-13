@@ -1,3 +1,7 @@
+import {
+  fetchWithOfflineCache,
+  readCachedData,
+} from '@/services/offlineCache'
 import type { CategoryItem, ProductItem } from '@/types/catalog'
 
 const FALLBACK_CATEGORIES: readonly CategoryItem[] = [
@@ -180,49 +184,29 @@ const FALLBACK_PRODUCTS: readonly ProductItem[] = [
   },
 ]
 
-let cachedCategories: readonly CategoryItem[] | null = null
-let cachedProducts: readonly ProductItem[] | null = null
+const CATEGORIES_CACHE_KEY = 'catalog_categories'
+const PRODUCTS_CACHE_KEY = 'catalog_products'
 
 export function getCachedCategories(): readonly CategoryItem[] | null {
-  return cachedCategories
+  return readCachedData<readonly CategoryItem[]>(CATEGORIES_CACHE_KEY)
 }
 
 export function getCachedProducts(): readonly ProductItem[] | null {
-  return cachedProducts
+  return readCachedData<readonly ProductItem[]>(PRODUCTS_CACHE_KEY)
 }
 
 export async function fetchCategories(): Promise<readonly CategoryItem[]> {
-  try {
-    const res = await fetch('/bff/catalog/categories', {
-      credentials: 'same-origin',
-    })
-    if (!res.ok) {
-      cachedCategories = FALLBACK_CATEGORIES
-      return FALLBACK_CATEGORIES
-    }
-    const data = (await res.json()) as CategoryItem[]
-    cachedCategories = data
-    return data
-  } catch {
-    cachedCategories = FALLBACK_CATEGORIES
-    return FALLBACK_CATEGORIES
-  }
+  return fetchWithOfflineCache<readonly CategoryItem[]>(
+    CATEGORIES_CACHE_KEY,
+    '/bff/catalog/categories',
+    FALLBACK_CATEGORIES,
+  )
 }
 
 export async function fetchProducts(): Promise<readonly ProductItem[]> {
-  try {
-    const res = await fetch('/bff/catalog/products', {
-      credentials: 'same-origin',
-    })
-    if (!res.ok) {
-      cachedProducts = FALLBACK_PRODUCTS
-      return FALLBACK_PRODUCTS
-    }
-    const data = (await res.json()) as ProductItem[]
-    cachedProducts = data
-    return data
-  } catch {
-    cachedProducts = FALLBACK_PRODUCTS
-    return FALLBACK_PRODUCTS
-  }
+  return fetchWithOfflineCache<readonly ProductItem[]>(
+    PRODUCTS_CACHE_KEY,
+    '/bff/catalog/products',
+    FALLBACK_PRODUCTS,
+  )
 }

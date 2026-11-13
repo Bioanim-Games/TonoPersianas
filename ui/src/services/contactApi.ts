@@ -2,27 +2,21 @@ import {
   DEFAULT_CONTACT_CONFIG,
   type ContactInfoData,
 } from '@/config/contactConfig'
+import {
+  fetchWithOfflineCache,
+  readCachedData,
+} from '@/services/offlineCache'
 
-let cachedContactInfo: ContactInfoData | null = null
+const CONTACT_INFO_CACHE_KEY = 'business_contact_info'
 
 export function getCachedContactInfo(): ContactInfoData | null {
-  return cachedContactInfo
+  return readCachedData<ContactInfoData>(CONTACT_INFO_CACHE_KEY)
 }
 
 export async function fetchContactInfo(): Promise<ContactInfoData> {
-  try {
-    const res = await fetch('/bff/contact-info', {
-      credentials: 'same-origin',
-    })
-    if (!res.ok) {
-      cachedContactInfo = DEFAULT_CONTACT_CONFIG
-      return DEFAULT_CONTACT_CONFIG
-    }
-    const data = (await res.json()) as ContactInfoData
-    cachedContactInfo = data
-    return data
-  } catch {
-    cachedContactInfo = DEFAULT_CONTACT_CONFIG
-    return DEFAULT_CONTACT_CONFIG
-  }
+  return fetchWithOfflineCache<ContactInfoData>(
+    CONTACT_INFO_CACHE_KEY,
+    '/bff/contact-info',
+    DEFAULT_CONTACT_CONFIG,
+  )
 }

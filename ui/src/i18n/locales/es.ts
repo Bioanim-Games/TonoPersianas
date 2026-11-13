@@ -86,7 +86,11 @@ export const es: TranslationDictionary = {
     openMapsCta: 'Abrir ubicación en Google Maps',
     chat: {
       title: 'Chat en Línea · Toño Persianas',
-      statusOnline: 'Conectado con WhatsApp Business y Base de Datos',
+      statusOnline: 'Conectado con WhatsApp Business',
+      statusOffline: 'Sin conexión · Chat en pausa',
+      offlineBannerTitle: 'Modo sin conexión activo',
+      offlineBannerDescription:
+        'Puedes explorar el catálogo y nuestros datos de contacto sin internet. El chat en línea y el envío a WhatsApp se reactivarán automáticamente al recuperar tu conexión.',
       selectedProductPrefix: 'Modelo de interés:',
       welcomeMessage:
         '¡Hola! Bienvenido a Toño Persianas. ¿En qué modelo o medidas podemos asesorarte hoy?',

@@ -92,9 +92,17 @@ export async function bffSecurityMiddleware(
 
   await next()
 
-  // 3. Attach strict BFF security headers (zero upstream trace)
+  // 3. Attach strict BFF security headers and smart cache-control
   c.header('X-Content-Type-Options', 'nosniff')
   c.header('X-Frame-Options', 'DENY')
   c.header('Referrer-Policy', 'strict-origin-when-cross-origin')
-  c.header('Cache-Control', 'private, no-store')
+
+  const isCacheableGet =
+    method === 'GET' && !c.req.path.endsWith('/session')
+  c.header(
+    'Cache-Control',
+    isCacheableGet
+      ? 'private, max-age=60, stale-while-revalidate=300'
+      : 'private, no-store',
+  )
 }

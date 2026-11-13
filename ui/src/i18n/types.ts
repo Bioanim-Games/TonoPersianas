@@ -64,6 +64,9 @@ export interface TranslationDictionary {
     chat: {
       title: string
       statusOnline: string
+      statusOffline: string
+      offlineBannerTitle: string
+      offlineBannerDescription: string
       selectedProductPrefix: string
       welcomeMessage: string
       autoReplyMessage: string

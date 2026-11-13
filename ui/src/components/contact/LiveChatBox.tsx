@@ -1,6 +1,14 @@
-import { MessageCircle, Send, Settings2, Sparkles } from 'lucide-react'
+import { cn } from 'cn'
+import {
+  MessageCircle,
+  Send,
+  Settings2,
+  Sparkles,
+  WifiOff,
+} from 'lucide-react'
 import { useEffect, useState, type FormEvent } from 'react'
 import type { ContactInfoData } from '@/config/contactConfig'
+import { useNetworkStatus } from '@/hooks/useNetworkStatus'
 import { useTranslation } from '@/i18n'
 import type { ChatMessage } from '@/types/chat'
 
@@ -21,6 +29,7 @@ export function LiveChatBox({
   contactInfo,
 }: LiveChatBoxProps) {
   const { t } = useTranslation()
+  const { isOffline } = useNetworkStatus()
   const [clientName, setClientName] = useState('')
   const [inputText, setInputText] = useState('')
   const [showTestConfig, setShowTestConfig] = useState(false)
@@ -31,6 +40,7 @@ export function LiveChatBox({
   useEffect(() => {
     setTargetWhatsappPhone(contactInfo.defaultWhatsappDigits)
   }, [contactInfo.defaultWhatsappDigits])
+
   const [messages, setMessages] = useState<readonly ChatMessage[]>(() => [
     {
       id: 'welcome-1',
@@ -44,6 +54,7 @@ export function LiveChatBox({
 
   function handleSendMessage(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    if (isOffline) return
     const trimmed = inputText.trim()
     if (!trimmed) return
 
@@ -52,9 +63,8 @@ export function LiveChatBox({
       sender: 'client',
       senderName: clientName.trim() || 'Cliente',
       text: trimmed,
-      productSlug: selectedProductSlug ?? undefined,
       createdAt: formatTimeNow(),
-      status: 'delivered-to-whatsapp',
+      status: 'sent',
     }
 
     const replyMsg: ChatMessage = {
@@ -100,9 +110,27 @@ export function LiveChatBox({
           <h2 className="font-heading text-xl font-medium text-stone-900 dark:text-stone-50">
             {t.contactPage.chat.title}
           </h2>
-          <p className="mt-1 flex items-center gap-2 text-xs font-medium text-emerald-700 dark:text-emerald-400">
-            <span className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981] dark:bg-emerald-400" />
-            <span>{t.contactPage.chat.statusOnline}</span>
+          <p
+            className={cn(
+              'mt-1 flex items-center gap-2 text-xs font-medium',
+              isOffline
+                ? 'text-amber-700 dark:text-amber-400'
+                : 'text-emerald-700 dark:text-emerald-400',
+            )}
+          >
+            <span
+              className={cn(
+                'h-2 w-2 rounded-full',
+                isOffline
+                  ? 'bg-amber-500 shadow-[0_0_8px_#f59e0b] dark:bg-amber-400'
+                  : 'bg-emerald-500 shadow-[0_0_8px_#10b981] dark:bg-emerald-400',
+              )}
+            />
+            <span>
+              {isOffline
+                ? t.contactPage.chat.statusOffline
+                : t.contactPage.chat.statusOnline}
+            </span>
           </p>
         </div>
 
@@ -119,6 +147,28 @@ export function LiveChatBox({
           <span>Prueba WA</span>
         </button>
       </div>
+
+      {/* Offline Mode Guard Banner (Blocks Online Chat when Offline) */}
+      {isOffline && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="flex items-start gap-3 border-b border-amber-500/35 bg-amber-50/90 px-6 py-3.5 text-xs text-amber-950 dark:border-amber-500/30 dark:bg-amber-950/35 dark:text-amber-200"
+        >
+          <WifiOff
+            className="mt-0.5 size-4 shrink-0 text-amber-700 dark:text-amber-400"
+            aria-hidden="true"
+          />
+          <div>
+            <p className="font-semibold">
+              {t.contactPage.chat.offlineBannerTitle}
+            </p>
+            <p className="mt-0.5 leading-relaxed text-amber-900/90 dark:text-amber-200/85">
+              {t.contactPage.chat.offlineBannerDescription}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Collapsible Personal Phone Test Mode Bar */}
       {showTestConfig && (
@@ -184,23 +234,30 @@ export function LiveChatBox({
       >
         <input
           type="text"
+          disabled={isOffline}
           value={clientName}
           onChange={(e) => setClientName(e.target.value)}
           placeholder={t.contactPage.chat.namePlaceholder}
-          className="mb-2.5 w-full rounded-xl border border-[#D5C7B2] bg-white px-4 py-2.5 text-xs text-stone-900 placeholder:text-stone-400 focus:border-[#8C6A3E] focus:outline-none dark:border-stone-800 dark:bg-stone-950 dark:text-stone-100 dark:placeholder:text-stone-500 dark:focus:border-[#D6C3A5]"
+          className="mb-2.5 w-full rounded-xl border border-[#D5C7B2] bg-white px-4 py-2.5 text-xs text-stone-900 placeholder:text-stone-400 focus:border-[#8C6A3E] focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 dark:border-stone-800 dark:bg-stone-950 dark:text-stone-100 dark:placeholder:text-stone-500 dark:focus:border-[#D6C3A5]"
         />
 
         <div className="flex items-center gap-2.5">
           <input
             type="text"
+            disabled={isOffline}
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
-            placeholder={t.contactPage.chat.messagePlaceholder}
-            className="flex-1 rounded-xl border border-[#D5C7B2] bg-white px-4 py-3 text-sm text-stone-900 placeholder:text-stone-400 focus:border-[#8C6A3E] focus:outline-none dark:border-stone-800 dark:bg-stone-950 dark:text-stone-100 dark:placeholder:text-stone-500 dark:focus:border-[#D6C3A5]"
+            placeholder={
+              isOffline
+                ? t.contactPage.chat.statusOffline
+                : t.contactPage.chat.messagePlaceholder
+            }
+            className="flex-1 rounded-xl border border-[#D5C7B2] bg-white px-4 py-3 text-sm text-stone-900 placeholder:text-stone-400 focus:border-[#8C6A3E] focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 dark:border-stone-800 dark:bg-stone-950 dark:text-stone-100 dark:placeholder:text-stone-500 dark:focus:border-[#D6C3A5]"
           />
           <button
             type="submit"
-            className="inline-flex items-center gap-2 rounded-xl bg-stone-900 px-5 py-3 text-xs font-semibold tracking-wider text-[#F5EFE6] uppercase transition-colors hover:bg-stone-800 dark:bg-[#E8DAC2] dark:text-stone-950 dark:hover:bg-[#F3E9D7]"
+            disabled={isOffline}
+            className="inline-flex items-center gap-2 rounded-xl bg-stone-900 px-5 py-3 text-xs font-semibold tracking-wider text-[#F5EFE6] uppercase transition-colors hover:bg-stone-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-[#E8DAC2] dark:text-stone-950 dark:hover:bg-[#F3E9D7]"
           >
             <span>{t.contactPage.chat.sendButton}</span>
             <Send className="size-3.5" aria-hidden="true" />
@@ -208,10 +265,19 @@ export function LiveChatBox({
         </div>
 
         <a
-          href={buildWhatsappHref()}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-3.5 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-700/40 bg-emerald-800 px-4 py-3 text-xs font-semibold tracking-[0.16em] text-emerald-50 uppercase transition-colors hover:bg-emerald-700 dark:border-emerald-500/40 dark:bg-emerald-950/50 dark:text-emerald-300 dark:hover:bg-emerald-900/60"
+          href={isOffline ? undefined : buildWhatsappHref()}
+          target={isOffline ? undefined : '_blank'}
+          rel={isOffline ? undefined : 'noopener noreferrer'}
+          aria-disabled={isOffline}
+          onClick={(e) => {
+            if (isOffline) e.preventDefault()
+          }}
+          className={cn(
+            'mt-3.5 inline-flex w-full items-center justify-center gap-2 rounded-xl border px-4 py-3 text-xs font-semibold tracking-[0.16em] uppercase transition-colors',
+            isOffline
+              ? 'cursor-not-allowed border-stone-400/40 bg-stone-300/60 text-stone-500 dark:border-stone-800 dark:bg-stone-900/50 dark:text-stone-500'
+              : 'border-emerald-700/40 bg-emerald-800 text-emerald-50 hover:bg-emerald-700 dark:border-emerald-500/40 dark:bg-emerald-950/50 dark:text-emerald-300 dark:hover:bg-emerald-900/60',
+          )}
         >
           <MessageCircle className="size-4" aria-hidden="true" />
           <span>{t.contactPage.chat.openWhatsappButton}</span>
