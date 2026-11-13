@@ -20,15 +20,15 @@ export function HeroSection() {
         </div>
 
         {/* Editorial Serif Headline */}
-        <h1 className="font-heading text-4xl leading-[1.1] font-normal tracking-tight text-stone-900 drop-shadow-[0_2px_14px_rgba(255,255,255,0.65)] sm:text-6xl lg:text-7xl dark:text-stone-50 dark:drop-shadow-[0_4px_24px_rgba(0,0,0,0.45)]">
+        <h1 className="font-heading text-4xl leading-[1.1] font-normal tracking-tight text-stone-950 [text-shadow:0_1px_2px_rgba(250,246,238,1),0_0_16px_rgba(250,246,238,0.95),0_0_30px_rgba(245,240,230,0.9)] sm:text-6xl lg:text-7xl dark:text-stone-50 dark:[text-shadow:none] dark:drop-shadow-[0_4px_24px_rgba(0,0,0,0.45)] max-md:dark:[text-shadow:0_2px_12px_rgba(0,0,0,0.9),0_0_24px_rgba(0,0,0,0.75)]">
           <span className="block">{t.hero.titleLine1}</span>
-          <span className="mt-1 block italic text-[#7A5930] dark:text-[#E8DAC2]">
+          <span className="mt-1 block italic text-[#634520] dark:text-[#E8DAC2]">
             {t.hero.titleAccent}
           </span>
         </h1>
 
         {/* Brand Description */}
-        <p className="mt-6 max-w-xl text-base leading-relaxed font-light text-stone-800 drop-shadow-[0_1px_8px_rgba(255,255,255,0.75)] sm:text-lg dark:text-stone-200/90 dark:drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]">
+        <p className="mt-6 max-w-xl text-base leading-relaxed font-light text-stone-950 [text-shadow:0_1px_2px_rgba(250,246,238,1),0_0_12px_rgba(250,246,238,0.98),0_0_24px_rgba(250,246,238,0.92)] sm:text-lg dark:text-stone-200/90 dark:[text-shadow:none] dark:drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)] max-md:dark:text-stone-100 max-md:dark:[text-shadow:0_2px_10px_rgba(0,0,0,0.9),0_0_20px_rgba(0,0,0,0.8)]">
           {t.hero.description}
         </p>
 

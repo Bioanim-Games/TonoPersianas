@@ -20,7 +20,7 @@ export function HomePage() {
         />
 
         {/* Light Theme: Natural bright image with only a subtle warm-alabaster left sheen for text clarity */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#FAF6EE]/65 via-[#FAF6EE]/20 to-transparent dark:from-stone-950/85 dark:via-stone-950/50 dark:to-stone-950/15" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#FAF6EE]/80 via-[#FAF6EE]/40 to-transparent max-md:from-[#FAF6EE]/82 max-md:via-[#FAF6EE]/48 max-md:to-[#FAF6EE]/10 dark:from-stone-950/85 dark:via-stone-950/50 dark:to-stone-950/15" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#F5F0E6]/35 via-transparent to-transparent dark:from-stone-950/75 dark:via-transparent dark:to-stone-950/40" />
       </div>
 
